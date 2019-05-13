@@ -19,7 +19,6 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import RMSprop
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
-import seaborn as sns
 
 
 #################### Environment & Variables ############################
@@ -39,7 +38,6 @@ weightFile = './Model/best.hdf5'
 datafile = './Data/datafile.npz'
 
 ####################### Loading the Data ################################
-
 
 dataset = np.load(datafile)
 
@@ -67,13 +65,30 @@ from sklearn.model_selection import train_test_split
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size = 0.1, random_state=random_seed)
 
 
-
 ####################### Defining the model ##############################
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3 , 
                         input_shape=(imageSize,imageSize,3),activation= 'relu' ))
 model.add(Convolution2D(32, 3, 3 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+
+model.add(Convolution2D(64, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(32, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+
+model.add(Convolution2D(128, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(128, 2, 2 , 
                         input_shape=(imageSize,imageSize,3),activation= 'relu' ))
 model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -94,6 +109,7 @@ model.compile(loss= 'categorical_crossentropy' ,
               optimizer= optimizer , metrics=[ 'accuracy' ])
 
 #################### Defining the Checkpoints ###########################
+
 l_r = ReduceLROnPlateau(monitor='val_acc', factor=0.5, 
                                   patience=3, verbose=1, 
                                   min_lr=0.000001)
@@ -117,53 +133,21 @@ model.fit_generator(datagen.flow(X_train, y_train, batch_size = 32),
                     validation_steps = len(X_val) / 16, epochs = epochs, 
                     callbacks = callbacks, verbose = verbose)
 
-#training_set = datagen.flow_from_directory(X_train, y_train,
-#                                                 target_size = (64, 64),
-#                                                 batch_size = 32,
-#                                                 class_mode = 'binary')
-#
-#test_set = datagen.flow_from_directory(X_test, y_test,
-#                                        target_size = (64, 64),
-#                                        batch_size = 32,
-#                                        class_mode = 'binary')
-#
-#
-#model.fit_generator(training_set,
-#                     samples_per_epoch = 5000,
-#                     nb_epoch = 100,
-#                     validation_data = test_set,
-#                     nb_val_samples = 1120)
 model.save('Saved_Model.h5')
 
 
 
+########################  Prediction  ###################
+
 y_pred = model.predict(X_test)
-
-y_pred = 
-y_test = 
-
 
 y_pred = np.argmax(y_pred, axis=1)
 y_test = np.argmax(y_test, axis=1)
 
 
-
-
-
-
-labels =  ['Train','Car','Plane','Bicycle','Bus','Ship']
+labels =  ['Car','Bicycle','Bus']
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#cax = ax.matshow(cm)
-#plt.title('Confusion matrix of the classifier')
-#fig.colorbar(cax)
-#ax.set_xticklabels([''] + labels)
-#ax.set_yticklabels([''] + labels)
-#plt.xlabel('Predicted')
-#plt.ylabel('True')
-#plt.show()
 
 pd.DataFrame(cm).to_csv("CM.csv")
 
@@ -172,18 +156,21 @@ pd.DataFrame(cm).to_csv("CM.csv")
 
 
 
-##############  Prediction for a sample pictures  #############
 
-img = cv2.imread(imagePath)
-imgRes = cv2.resize(img,(imageSize,imageSize))
 
-X_temp = []
-X_temp.append(imgRes)
-X = np.asarray(X_temp)
-X = X/255
 
-y = model.predict_classes(X)
-classno = np.ndarray.tolist(y)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
