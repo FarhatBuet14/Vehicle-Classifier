@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 11 02:01:00 2018
-
-@author: Suhail
-"""
-
 import cv2
 import os
 import numpy as np
 
 ######################### Parameters #######################################
 
-imageSize = 64
+imageSize = 128
 
 fldr = './Own_Dataset/Train/'
 
@@ -40,18 +33,12 @@ def getData(folder):
     folders = os.listdir(folder)
     for folderName in folders:
         if not folderName.startswith('.'):
-            if folderName in ['Train']:
-                label = 0
             if folderName in ['Car']:
-                label = 1
-            elif folderName in ['Plane']:
-                label = 2
+                label = 0
             elif folderName in ['Bicycle']:
-                label = 3
+                label = 1
             elif folderName in ['Bus']:
-                label = 4    
-            elif folderName in ['Ship']:
-                label = 5
+                label = 2
     
             filenames = os.listdir(folder + folderName)
             for image_filename in filenames:
@@ -74,14 +61,6 @@ X, y = shuffleData(X,y)
 ################# Storing the Dataset to an npz file #######################
 
 np.savez(datafile, X = X, y = y)
-
-
-
-
-
-
-
-
 
 
 
