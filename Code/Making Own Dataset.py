@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May  8 21:15:47 2019
-
-@author: User
-"""
-
 import urllib.request
 import cv2
 import numpy as np
 import os
-
 
 
 
@@ -35,35 +27,15 @@ car3_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n02
 car4_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n02930766'
 car5_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n03079136'
 bus2_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n04146614'
-
-
-
-
-
-
-
-
-
-
-
 bus3_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n04487081'
-
 bus4_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n03769881'
-
-bus5_links = ''
-
-bus6_links = ''
-
-
-
+bus5_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n04212165'
+train2_links = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n02917067'
 
 
 def store_raw_images(link):
     urls = urllib.request.urlopen(link).read().decode()
-    pic_num = 1129
-    
-#    if not os.path.exists('Own_Dataset'):
-#        os.makedirs('Own_Dataset')
+    pic_num = 1
         
     for i in urls.split('\n'):
         try:
@@ -80,28 +52,6 @@ def store_raw_images(link):
             print(str(e)) 
 
 
-store_raw_images(bus2_links)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+store_raw_images(train2_links)
 
 
