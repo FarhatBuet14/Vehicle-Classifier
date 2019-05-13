@@ -1,16 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 11 10:39:10 2018
-
-@author: Suhail
-"""
-
 ####################### Library Imports ################################
 
 import cv2
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense,Flatten,Dropout
+from keras.layers import Dense,Flatten,Dropout, BatchNormalization
 from keras.layers.convolutional import Convolution2D,MaxPooling2D
 
 ################# Environment and Variables #############################
@@ -20,11 +13,11 @@ K.set_image_data_format('channels_last')
 
 seed = 7
 np.random.seed(seed)
-num_classes = 7
-imageSize = 64
+num_classes = 3
+imageSize = 128
 
 weightFile = './Model/best.hdf5'
-imagePath = 'testObject1.jpg'
+imagePath = 'download 2.jpg'
 
 ###################### Taking image input ###############################
 
@@ -39,11 +32,33 @@ X = X/255
 ################## Defining & Loading Model #############################
 
 model = Sequential()
-
-model = Sequential()
-model.add(Convolution2D(32, 3, 3 , input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(32, 3, 3 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(32, 3, 3 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.2))
+
+
+model.add(Convolution2D(64, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(32, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+
+model.add(Convolution2D(128, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(Convolution2D(128, 2, 2 , 
+                        input_shape=(imageSize,imageSize,3),activation= 'relu' ))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+
 model.add(Flatten())
 model.add(Dense(128, activation= 'relu' ))
 model.add(Dense(num_classes, activation= 'softmax' ))
@@ -56,7 +71,8 @@ model.load_weights(weightFile)
 y = model.predict_classes(X)
 classno = np.ndarray.tolist(y)
 
-dict = {0: 'Riksa', 1: 'Car', 2:'Plane', 3: 'Bicycle', 4: 'Bus', 5:'Ship', 6:'Train'}
+
+dict = {0: 'Car', 1: 'Bicycle', 2: 'Bus'}
 objectClass = dict[classno[0]]
 print(objectClass)
 
@@ -67,21 +83,6 @@ cv2.putText(img, objectClass,(50,50), font, 2, (200,255,0), 5, cv2.LINE_AA)
 cv2.imshow('Prediction',img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
