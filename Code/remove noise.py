@@ -1,14 +1,16 @@
 import cv2
 import numpy as np
 import os
+import pandas as pd 
+import shutil
+
+
 
 folder = './Bicycle'
 
 
 
-save_folder = './Resized/Bicycle/'
-img_size = 256
-
+######################################################################
 
 def resize_images(folder, save_folder, img_size = 128):
     count = 0
@@ -24,12 +26,13 @@ def resize_images(folder, save_folder, img_size = 128):
     
     return count
 
-
+save_folder = './Resized/Car/'
+img_size = 256
 count = resize_images(folder, save_folder, img_size)
 
 
 
-
+######################################################################
 
 
 
@@ -78,6 +81,9 @@ def remove_noise(folder):
 
 
 
+######################################################################
+
+
 def remove_blanks(folder):
     count = 0
     filenames = os.listdir(folder)
@@ -98,13 +104,26 @@ del_count = remove_blanks(folder)
 
 
 
+######################################################################
 
+ 
+deleted_folder = "./Deleted"
+csv_file_name = "Bicycle.csv"
 
+def delete_the_rejected_images(csv_file_name, deleted_folder):
+    
+    file = pd.read_csv(csv_file_name) 
+    file = np.array(file)
+    image_count = 0
+    for file_name in file[:, 0]:
+        if(file[image_count, 1] == 2):
+            shutil.move(folder + '/' + file_name, deleted_folder + '/' + 'deleted_' + file_name) 
+            print(file_name + ' rejected, so removed - ' + str(file[image_count, 1]))
+        
+        image_count += 1
 
+    return image_count
 
-
-
-
-
+image_count = delete_the_rejected_images(csv_file_name, deleted_folder)
 
 
