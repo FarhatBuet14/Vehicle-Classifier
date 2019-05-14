@@ -1,17 +1,33 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 10 03:41:28 2019
-
-@author: User
-"""
-
-
-import urllib.request
 import cv2
 import numpy as np
 import os
 
-foldered = './Car'
+folder = './Bicycle'
+
+
+
+save_folder = './Resized/Bicycle/'
+img_size = 256
+
+
+def resize_images(folder, save_folder, img_size = 128):
+    count = 0
+    filenames = os.listdir(folder)
+    
+    for image_filename in filenames:
+        img_file = cv2.imread(folder + '/' + image_filename)
+        
+        if img_file is not None: 
+            img_file = cv2.resize(img_file, (img_size, img_size))
+            count += 1
+            cv2.imwrite(save_folder + image_filename, img_file)
+    
+    return count
+
+
+count = resize_images(folder, save_folder, img_size)
+
+
 
 
 
@@ -27,7 +43,7 @@ def remove_noise(folder):
         img_file = cv2.imread(folder + '/' + image_filename)
         
         if img_file is not None: 
-            #print("yes1")
+            #print(pic_num)
             img_arr = np.asarray(img_file)
             
             if(pic_num == 1):
@@ -52,12 +68,12 @@ def remove_noise(folder):
                     X.append(img_arr)
     
             pic_num += 1
-    
+
     return X, count
 
 
 
-[X_bla, del_count] = remove_noise(foldered)
+[X_bla, del_count] = remove_noise(folder)
 
 
 
@@ -77,7 +93,7 @@ def remove_blanks(folder):
     return count
 
 
-del_count = remove_blanks(foldered)
+del_count = remove_blanks(folder)
 
 
 
