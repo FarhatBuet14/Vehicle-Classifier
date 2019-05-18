@@ -28,6 +28,7 @@ dataset = np.load(datafile)
 
 X_test = dataset['X_test']
 y_test = dataset['y_test']
+test_image_names = dataset['test_image_names']
 
 ###################### Taking image input ###############################
 
@@ -100,17 +101,18 @@ y_pred = model.predict_classes(X_test)
 y_test = np.argmax(y_test, axis=1)
 
 
+#labels =  ['Train','Car','Plane','Bicycle','Bus','Ship']
 labels =  ['Car','Bicycle','Bus']
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
 
 
-pd.DataFrame(cm).to_csv("CM.csv")
+#pd.DataFrame(cm).to_csv("CM.csv")
 
 
 error_image = X_test[(y_test != y_pred)]
-error_prediction = y_test[(y_test != y_pred)]
-        
+error_prediction = y_pred[(y_test != y_pred)]
+error_image_names = test_image_names[(y_test != y_pred)]        
 
 ###########################  Showing the error images  ############################
 
@@ -137,6 +139,11 @@ def show_error_images(error_image, error_prediction, img_per_fig = 40, num_rows 
                 cv2.putText(error_image[index, :, :, :], 
                         dict[error_prediction[index]], 
                         (50,115), font, 1, (200,255,0), 2, cv2.LINE_AA)
+                
+                cv2.putText(error_image[index, :, :, :], 
+                        str(index), 
+                        (50,50), font, 1, (200,255,0), 2, cv2.LINE_AA)
+                
                      
                 if(col == 0): 
                     row_img = error_image[index, :, :, :]
@@ -159,6 +166,51 @@ def show_error_images(error_image, error_prediction, img_per_fig = 40, num_rows 
             if key == 27:
                 cv2.destroyAllWindows()
                 break
+            
+    
+    rest = len(error_image) % img_per_fig
+
+    for row in range(0, num_rows):
+        
+        row_img = np.zeros((error_image.shape[1], 
+                       error_image.shape[2], error_image.shape[3]))
+        
+        for col in range(0, int(rest/num_rows)):
+            
+            cv2.putText(error_image[index, :, :, :], 
+                        dict[error_prediction[index]], 
+                        (50,115), font, 1, (200,255,0), 2, cv2.LINE_AA)
+                
+            cv2.putText(error_image[index, :, :, :], 
+                    str(index), 
+                    (50,50), font, 1, (200,255,0), 2, cv2.LINE_AA)
+                 
+            if(col == 0): 
+                row_img = error_image[index, :, :, :]
+            
+            else:
+                row_img = cv2.hconcat((row_img, 
+                                       error_image[index, :, :, :]))
+            
+            index += 1
+            
+            if(index == len(error_image)):
+                break
+            
+        cv2.imshow("Errors - Figure No. " + str(fig_count), row_img)
+        
+        while True:    
+            key = cv2.waitKey(1)
+            if key == 27:
+                cv2.destroyAllWindows()
+                break
+                
+        if(index == len(error_image)):
+            break
+        
+        
+        
+        
 
 img_per_fig = 40
 num_rows = 4
