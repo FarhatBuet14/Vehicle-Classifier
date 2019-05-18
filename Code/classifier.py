@@ -110,9 +110,37 @@ print(cm)
 #pd.DataFrame(cm).to_csv("CM.csv")
 
 
+
+
+######################### Saving Error Data  ############################
+
+
 error_image = X_test[(y_test != y_pred)]
 error_prediction = y_pred[(y_test != y_pred)]
 error_image_names = test_image_names[(y_test != y_pred)]        
+
+error_prediction_classes = []
+dict = {0: 'Car', 1: 'Bicycle', 2: 'Bus'}
+for prediction in error_prediction:
+    error_prediction_classes.append(dict[prediction])
+
+ 
+
+error = []
+error.append(error_image_names)
+error.append(error_prediction)
+error.append(error_prediction_classes)
+
+
+
+pd.DataFrame(error).to_csv("error.csv")
+
+
+err = pd.read_csv("error.csv")
+err = np.array(err, np.dtype(np.str))
+err = err.T
+pd.DataFrame(err).to_csv("error.csv")
+
 
 ###########################  Showing the error images  ############################
 
@@ -215,6 +243,9 @@ def show_error_images(error_image, error_prediction, img_per_fig = 40, num_rows 
 img_per_fig = 40
 num_rows = 4
 show_error_images(error_image, error_prediction, img_per_fig, num_rows)
+
+
+
 
 
 
