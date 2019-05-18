@@ -18,12 +18,13 @@ datafile = './Data/datafile.npz'
 
 # Function to shuffle two arrays in Unison
 
-def shuffleData(X,y):
+def shuffleData(X,y, image_names):
     randomize = np.arange(len(X))
     np.random.shuffle(randomize)
     X_shuffled = X[randomize]
     y_shuffled = y[randomize]
-    return X_shuffled,y_shuffled
+    image_names_shuffled = image_names[randomize]
+    return X_shuffled,y_shuffled, image_names_shuffled
 
 # Function to get all images from a directory
 
@@ -52,19 +53,27 @@ def getData(folder):
                     img_arr = np.asarray(img_file)
                     X.append(img_arr)
                     y.append(label)
+                    image_names.append(folder + folderName + '/' + image_filename)
     X = np.asarray(X)
     y = np.asarray(y)
-    return image_names,y
+    image_names = np.asarray(image_names)
+    return X,y, image_names
 
 ##################### Main Code ############################################
 
-X, y = getData(fldr)
-X, y = shuffleData(X,y)
+X, y, image_names = getData(fldr)
+X, y, image_names = shuffleData(X,y, image_names)
 
 
-random_seed = 0
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1, random_state=random_seed)
+
+X_train = X[range(0, int(X.shape[0]*0.9)), :, :, :]
+y_train = y[range(0, int(y.shape[0]*0.9)), ]
+
+X_test  = X[range(int(X.shape[0]*0.9), X.shape[0]), :, :, :]
+y_test  = y[range(int(y.shape[0]*0.9), y.shape[0]), ]
+
+test_image_names = image_names[range(int(image_names.shape[0]*0.9), 
+                                     image_names.shape[0]), ]
 
 
 X_train = X_train/255
@@ -85,7 +94,8 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size = 
 np.savez(datafile,
          X_train=X_train, X_test=X_test,
          y_train=y_train, y_test=y_test,
-         X_val=X_val, y_val=y_val)
+         X_val=X_val, y_val=y_val,
+         test_image_names = test_image_names)
 
 
 
